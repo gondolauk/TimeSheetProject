@@ -37,8 +37,8 @@ body, html {
 .logo {
     background-image: url(../styles/images/logo.png);
     background-repeat: no-repeat;
-    width: 319px;
-    height: 60px;
+    width: 250px;
+    height: 100px;
     margin: 40px auto;
 }
 
@@ -157,6 +157,14 @@ body, html {
     font-size: 1.2em;
     text-shadow: none;
     line-height: 1.8em;
+    display: inline-block;
+}
+
+.timesheet-info {
+    color: #2e5968;
+    font-size: 0.8em;
+    text-shadow: none;
+    line-height: 1.2em;
     display: inline-block;
 }
 

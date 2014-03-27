@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Time Sheet</title>
+    </head>   
+    <body>
+        <section data-role="layout" data-id="default">
+        <header data-role="header">
+            <div data-role="navbar">Time Sheet</div>
+             <div class="separator">
+                <div class="dark"></div>
+                <div class="light"></div>
+            </div>
+            <form id="myform">
+             <div class="view-content "> Task
+                </div>
+                </div> <input name="Task" required /> <br />
+             <input name="Stad.Hours" required />
+</form>
+        </header>
+        <!--View content will render here-->
+        <footer data-role="footer">
+            <div data-role="tabstrip">
+                <a href="#home">Home</a>        
+            </div> 
+        </footer>
+    </section>
+        <script src="kendo/js/jquery.min.js"></script>
+        <script src="kendo/js/kendo.all.min.js"></script>
+        <script> var app = new kendo.mobile.Application();</script>
+    </body>
+</html>
