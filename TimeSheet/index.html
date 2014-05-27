@@ -489,9 +489,9 @@
                     load: function () {
                     $.ajax({
                         type: "GET",
-                        // url: "http://localhost:8005/Service.svc/GetJson/" + timesheetId,
+                        // url: "http://localhost:8005/Service.svc/GetJson/" + + $("#timesheetIdtext").val() ,
                         
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + $("#timesheetIdtext").val() ,
+                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + $("#timesheetIdtext").val() ,
                         //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
                         data: 1,
                         contentType: "application/json; charset=utf-8",
@@ -510,38 +510,40 @@
             },
                
               update: function () {
-                   alert($("#timesheetIdtext").val());
-                  /*  $.ajax({
+                  // alert(this.data.TimeSheetId + "- " + this.data.StHours );
+                  $.ajax({
                         type: "POST",
+                      //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
-                      //data: JSON.stringify(viewModel.data),
+                        data: JSON.stringify(this.data),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function (data) {
-                              alert("Updated Successfully" + data);
+                            // alert("Updated Successfully" + data);
                             // viewModel.data = data.GetTimeSheetByIdResult;
                             // kendo.bind($("#view"), viewModel);
                         },
                         error: function (xhr) {
-                            alert(xhr.responseText);
+                            //  alert(xhr.responseText);
                         }
-                    });*/
+                    });
                 },
                 destory : function () {
                     $.ajax({
                         type: "DELETE",
+                        //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
                         // data: 1,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                             alert("Detele successfully!");
-                            viewModel.data = data.GetTimeSheetByIdResult;
-                            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
-                        },
-                        error: function (xhr) {
-                            //  alert(xhr.responseText);
-                        }
+                        //contentType: "application/json; charset=utf-8",
+                        // dataType: "jsonp",
+                       complete: function (xhr, status) {
+                                if (status === 'error' || !xhr.responseText) {
+                                    // alert(status);
+                         }
+                    else {
+                                   alert("Delete Success!")
+                          }
+                        }        
                     });
                 },
 
