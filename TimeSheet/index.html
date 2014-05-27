@@ -88,7 +88,8 @@
   <ul data-role="listview" data-source="myDataSource" data-template="my-template" data-header-template="header-template" id= "custom-listview"></ul>
 </div>
     <div data-role="view"  data-title="Time & Expense - Weekly View" id="tabstrip-TimeSheetWeeklyView">
-  <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"></ul>
+         <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
+  <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"   </ul>
 </div>
 
 <style>
@@ -142,7 +143,7 @@
     
 <script type="text/x-kendo-template" id="my-template" >
  
-   <p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p><a data-role="button" class="details-link">>></a>
+   <p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p><a data-role="button" class="details-link"  >>></a>
 
     </script>
 
@@ -153,7 +154,7 @@
 
     <script type="text/x-kendo-template" id="weeklydetail-template">
     <p>
-       <H5 class="item-info">  #: Project # -  #: StHours # Hours </H5><a data-role="button" class="details-link">Edit</a><a data-role="button" class="details-link">Delete</a>
+       <H5 class="item-info">  #: Project # -  #: StHours # Hours </H5><a data-role="button" class="details-link" >Edit</a><a data-role="button" class="details-link" id="detelebtn">Delete</a>
     </p>
 </script>
 
@@ -200,6 +201,10 @@
        
 
         new kendo.mobile.Application();
+        
+    
+    
+
     </script> 
     
     
@@ -264,14 +269,14 @@
                 }
             });*/
 
-       
-
+  
 
    </script>
    
      <div id="tabstrip-ExpenseLog" data-role="view" data-title="Time Log" data-init="initForm" data-use-native-scrolling="true" >
                 <form action="./index.html">
         <ul data-role="listview" data-style="inset">
+            
             <li><a data-role="backbutton">Back</a><a data-role="button" data-click="onClick">DONE</a>    
             </li>
            <li>
@@ -332,19 +337,28 @@
             </li>
              </ul>
          </form>       
-    </div>       
-     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Log" data-init="initForm" data-use-native-scrolling="true" >               
+    </div>      
+     <!-- <div data-role="view" id="foo" data-show="fooShow">test</div>-->
+     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Sheet Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParameters">            
          <form action="./index.html">
         <ul >
-            <a data-role="backbutton">Back</a><a data-role="button" data-bind="click: create">DONE</a>    
+            
+            <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
+                  
+            <a data-role="backbutton">Back</a>
+            <input type="text"  id="timesheetIdtext" />  
+            <a data-role="button" data-bind="click: create">Create</a>   
+            <a data-role="button"data-bind="click: load">Load</a>  
+            <a data-role="button" data-bind="click: update">Update</a> 
+            <a data-role="button" data-bind="click: destory">Delete</a> 
               <li>
           
                 <label>Customer
                     <select id="Select2"  data-bind="value: data.Customer">
-                        <option value="c1">EFA</option>
-                        <option value="c2">Spirax Spacro</option>
-                        <option value="c3">Trinity</option>
-                        <option value="c4">PunterSouthHall</option>
+                        <option value="EFA">EFA</option>
+                        <option value="Spirax">Spirax Spacro</option>
+                        <option value="Trinity">Trinity</option>
+                        <option value="PunterSouthHall">PunterSouthHall</option>
                     </select>
                 </label>
            
@@ -428,6 +442,7 @@
                            alert(xhr.responseText);
                        }
                    },
+                  
                    parameterMap: function (data, type) {
                        return kendo.stringify(data);
                    }
@@ -447,35 +462,107 @@
                    //var taskname =   viewModel.get("Task");
                    //}
                    //  console.log("this", this.data);
-                   dataSource.add(this.data);
+                   // dataSource.add(this.data);
                    // save the created data item
-                   dataSource.sync();
-                   e.preventDefault();
+                   // dataSource.sync();
+                   // e.preventDefault();
+                   
+ 
+                     $.ajax({
+                        type: "POST",
+                         //url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
+                        data: JSON.stringify(this.data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            alert("new timesheet has been created with a new ID : " + data);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });                   
+                   
+               },
 
+               //load: function (timesheetId) {
+                    load: function () {
+                    $.ajax({
+                        type: "GET",
+                        // url: "http://localhost:8005/Service.svc/GetJson/" + timesheetId,
+                        
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + $("#timesheetIdtext").val() ,
+                        //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
+                        data: 1,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            //  alert(data);
+                           viewModel.data = data.GetTimeSheetByIdResult;
+                            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });
 
-                   /*  $.ajax({
-                       type: "POST",
-                       url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
-                       data: JSON.stringify(this.data),
-                       contentType: "application/json; charset=utf-8",
-                       dataType: "jsonp",
-                       success: function (data) {
-                           alert(data);
-                       },
-                       error: function (xhr) {
-                           alert(xhr.responseText);
-                       }
-                   });*/
-
-               }
-
+                
+            },
+               
+              update: function () {
+                   alert($("#timesheetIdtext").val());
+                  /*  $.ajax({
+                        type: "POST",
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
+                      //data: JSON.stringify(viewModel.data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                              alert("Updated Successfully" + data);
+                            // viewModel.data = data.GetTimeSheetByIdResult;
+                            // kendo.bind($("#view"), viewModel);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });*/
+                },
+                destory : function () {
+                    $.ajax({
+                        type: "DELETE",
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        // data: 1,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                             alert("Detele successfully!");
+                            viewModel.data = data.GetTimeSheetByIdResult;
+                            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
+                        },
+                        error: function (xhr) {
+                            //  alert(xhr.responseText);
+                        }
+                    });
+                },
 
 
            });
 
            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
 
-
+          function getParameters(e) {
+             // {bar: "baz"}
+              //  e.view.params[0].ToString()
+              //  alert(e.view.params.TimeSheetId);
+              
+                if(e.view.params.TimeSheetId != undefined)
+               {
+                   // alert(e.view.params.TimeSheetId);
+                      viewModel.load(e.view.params.TimeSheetId);
+                  
+               }
+              
+        }
    </script>    
 <script>
     function initForm() {
@@ -492,6 +579,10 @@
         if (kendo.ui.Slider) {
             $("#slider").kendoSlider({ tooltip: { enabled: false } });
         }
+        
+        
+        
+        
     }
 </script>
 <script>
