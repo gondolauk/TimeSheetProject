@@ -84,13 +84,15 @@
     </div>
 
  
-   <div data-role="view"  data-title="Time & Expense - Weeks" id="tabstrip-TimeSheetWeekly">
-  <ul data-role="listview" data-source="myDataSource" data-template="my-template" data-header-template="header-template" id= "custom-listview"></ul>
-</div>
-    <div data-role="view"  data-title="Time & Expense - Weekly View" id="tabstrip-TimeSheetWeeklyView">
+   <div data-role="view"  data-title="Time & Expense - Weeks" id="tabstrip-TimeSheetWeekly" >
+      <div>     
+          <ul data-role="listview" data-source="myDataSource" data-template="my-template" data-header-template="header-template" id= "custom-listview" data-bind="click: navigate"></ul>
+       </div>
+       </div>
+    <div data-role="view"  data-title="Time & Expense - Weekly View" id="tabstrip-TimeSheetWeeklyView" data-show="getWeeklyPageParameters">
          <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
-  <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"   </ul>
-</div>
+      <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"   </ul> 
+        </div>
 
 <style>
     .km-ios #listview-home .km-content {
@@ -142,13 +144,11 @@
 </style>
     
 <script type="text/x-kendo-template" id="my-template" >
- 
-   <p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p><a data-role="button" class="details-link"  >>></a>
-
-    </script>
-
+<p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p> 
+  <a data-role="button" class="details-link"  >>></a>
+</script>
 <script type="text/x-kendo-template" id="header-template">
-   <H3 class="item-title" >  #: value # </H3> 
+   <H3 class="item-title" >  #: value # </H3>    
 </script>
 
 
@@ -162,6 +162,24 @@
     <p class="item-info"> #= kendo.toString(kendo.parseDate(value), 'd')# </p>
 </script>
     <script>
+        
+         var SummaryModel = kendo.data.Model.define({
+                   id: "TimeSheetId",
+                    fields: {
+                        // Customer: { type: "string" },
+                        //Project: { type: "string" },
+                        Status: { type: "string" },
+                        // Owner: { type: "string" },
+                        WeekStartDate: { type: "date" }
+                        //StHours: { type: "number" },
+                        //OtHours: { type: "number" },
+                        // Task: { type: "string" },
+                        // Note: { type: "string" },
+
+                    }                   
+               
+           });
+
         var myDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -171,7 +189,7 @@
 
             },
             schema: {
-                model: {
+                      model: {
                     id: "TimeSheetId",
                     fields: {
                         // Customer: { type: "string" },
@@ -185,9 +203,10 @@
                         // Note: { type: "string" },
 
                     }
-                },
+                                        
+            },
 
-                parse: function (data) {
+            parse: function (data) {
                     return data.GetTimeSheetResult;
                 },
                 type: "json"
@@ -202,54 +221,86 @@
 
         new kendo.mobile.Application();
         
-    
-    
+        var SummaryviewModel = kendo.observable({
+
+            data: new SummaryModel(),
+            navigate: function (e)
+            {
+                var wsd = kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
+                // alert(wsd);
+                  var app = new kendo.mobile.Application();
+                  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
+
+            },
+
+
+        });
+
+        kendo.bind($("#tabstrip-TimeSheetWeekly"), SummaryviewModel);
+
+     
 
     </script> 
     
     
     <script type="text/javascript">      
+    
+       
+               
+         weeklyviewDS = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=01/01/2014",
+                    dataType: 'json'
+                }
 
-            weeklyviewDS = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=05/05/2014",
-                        dataType: 'json'
+            },
+            schema: {
+                model: {
+                    id: "TimeSheetId",
+                    fields: {
+
+                        Project: { type: "string" },
+                        Status: { type: "string" },
+                        Owner: { type: "string" },
+                        WeekStartDate: { type: "date" },
+                        TimeSheetDate: { type: "date" },
+                        StHours: { type: "number" },
+                        OtHours: { type: "number" },
+
                     }
-
                 },
-                schema: {
-                    model: {
-                        id: "TimeSheetId",
-                        fields: {
 
-                            Project: { type: "string" },
-                            Status: { type: "string" },
-                            Owner: { type: "string" },
-                            WeekStartDate: { type: "date" },
-                            TimeSheetDate: { type: "date" },
-                            StHours: { type: "number" },
-                            OtHours: { type: "number" },
-
-                        }
-                    },
-
-                    parse: function (data) {
-                        //result comes from svc call. e.g
-                        return data.GetWeeklyTimeSheetResult;
-                    },
-                    type: "json"
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.GetWeeklyTimeSheetResult;
                 },
-                serverPaging: true,
-                pageSize: 10,
-                serverSorting: true,
-                group: { field: "TimeSheetDate" },
+                type: "json"
+            },
+            serverPaging: true,
+            pageSize: 10,
+            serverSorting: true,
+            group: { field: "TimeSheetDate" },
 
 
-            });
+        });
 
-              new kendo.mobile.Application();
-
+        
+           function getWeeklyPageParameters(e) {
+           
+               //   alert("1");
+               wds = e.view.params.q;
+               //   alert("2");
+               //  ();
+               //new kendo.mobile.Application();
+               weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=" + wds;
+               //   alert("3");
+               //Read data source to update
+              weeklyviewDS.read();
+               //        alert(e.view.params.q);
+          }
+        
+         new kendo.mobile.Application();
 
         /*  var list = $("#weeklylistview").kendoListView({
                 template: kendo.template($("#weeklydetail-template").html()),
