@@ -91,7 +91,7 @@
        </div>
     <div data-role="view"  data-title="Time & Expense - Weekly View" id="tabstrip-TimeSheetWeeklyView" data-show="getWeeklyPageParameters">
          <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
-      <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"   </ul> 
+      <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: process" ></ul> 
         </div>
 
 <style>
@@ -153,9 +153,13 @@
 
 
     <script type="text/x-kendo-template" id="weeklydetail-template">
-    <p>
-       <H5 class="item-info">  #: Project # -  #: StHours # Hours </H5><a data-role="button" class="details-link" >Edit</a><a data-role="button" class="details-link" id="detelebtn">Delete</a>
-    </p>
+      #if(Project =="")
+         {#<a data-role="button" class="details-link" >Add</a>
+          #}
+       else
+       {# <H5 class="item-info">  #: Project # -  #: StHours # Hours </H5>
+          <a data-role="button" class="details-link" id="Editbtn" data-id ="1" >Edit</a>
+          <a data-role="button"  class="details-link" id="detelebtn" data-id ="2" >Delete</a>#} # 
 </script>
 
 <script type="text/x-kendo-template" id="weeklyheader-template">
@@ -232,6 +236,8 @@
                   app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
 
             },
+            
+         
 
 
         });
@@ -250,7 +256,7 @@
          weeklyviewDS = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=01/01/2014",
+                    // url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=01/01/2014",
                     dataType: 'json'
                 }
 
@@ -285,7 +291,41 @@
 
         });
 
+         
         
+         var WeeklyviewModel = kendo.observable({
+
+             
+           
+             //data: new SummaryModel(),
+            process: function (e)
+            {
+                //debugger;
+                 
+                 var action = e.button.element.context.innerText;
+                  if(action == "Edit")
+                  {
+                      //redirect to another view with parameter
+                  }
+                  else if(action == "Delete")
+                  {
+                      //delete record
+                      
+                  }
+                  else
+                  {}
+                
+                // alert(data.index());
+                // var app = new kendo.mobile.Application();
+                //  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
+
+            },
+            
+
+        });
+        
+            kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
+
            function getWeeklyPageParameters(e) {
            
                //   alert("1");
