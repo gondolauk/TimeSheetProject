@@ -300,20 +300,44 @@
              //data: new SummaryModel(),
             process: function (e)
             {
-                //debugger;
+                debugger;
                  
                  var action = e.button.element.context.innerText;
+                 var  weekstartdate, timesheetdate, tsId;
+                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
+                 timesheetdate =   kendo.toString(kendo.parseDate(e.dataItem.TimeSheetDate), 'd');
+                 tsId = e.dataItem.TimeSheetId;
+                 
                   if(action == "Edit")
                   {
                       //redirect to another view with parameter
+                      alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
                   }
                   else if(action == "Delete")
                   {
-                      //delete record
-                      
+                      /* //delete record
+                        $.ajax({
+                        type: "DELETE",
+                        //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        // data: 1,
+                        //contentType: "application/json; charset=utf-8",
+                        // dataType: "jsonp",
+                       complete: function (xhr, status) {
+                                if (status === 'error' || !xhr.responseText) {
+                                    // alert(status);
+                         }
+                    else {
+                                   alert("Delete Success!")
+                          }
+                        }        
+                    });*/
                   }
                   else
-                  {}
+                  {
+                      
+                      
+                  }
                 
                 // alert(data.index());
                 // var app = new kendo.mobile.Application();
@@ -340,27 +364,7 @@
                //        alert(e.view.params.q);
           }
         
-         new kendo.mobile.Application();
-
-        /*  var list = $("#weeklylistview").kendoListView({
-                template: kendo.template($("#weeklydetail-template").html()),
-                headerTempalte: kendo.template($("#weeklyheader-template").html()),
-                dataSource: dataSource,
-                fixedHeaders: true,
-                dataBinding: function (e) {
-
-                    for (var i = 0; i < e.items.length; i++) {
-
-                        if (e.items[i].Project == '') {
-                            //  var contenthtml = $("#weeklydetail-template").html().replace("#: Project # -", "").replace(" #: StHours # ", "");
-                            //  template: contenthtml;
-                        }
-                    }
-
-                }
-            });*/
-
-  
+         new kendo.mobile.Application();    
 
    </script>
    
@@ -437,11 +441,11 @@
             <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
                   
             <a data-role="backbutton">Back</a>
-            <input type="text"  id="timesheetIdtext" />  
-            <a data-role="button" data-bind="click: create">Create</a>   
-            <a data-role="button"data-bind="click: load">Load</a>  
-            <a data-role="button" data-bind="click: update">Update</a> 
-            <a data-role="button" data-bind="click: destory">Delete</a> 
+          <!--  <input type="text"  id="timesheetIdtext" />  -->
+          <!--  <a data-role="button" data-bind="click: create">Create</a>   -->
+          <!--  <a data-role="button"data-bind="click: load">Load</a>  -->
+            <a data-role="button" data-bind="click: update">Done</a> 
+          <!--    <a data-role="button" data-bind="click: destory">Delete</a> -->
               <li>
           
                 <label>Customer
@@ -557,12 +561,24 @@
                    // save the created data item
                    // dataSource.sync();
                    // e.preventDefault();
+                      debugger;
+                                     
+               
                    
+                  var wsd = kendo.parseDate("2014/05/05", "yyyy/MM/dd", "en-GB").getTime();
+                   var tsd = kendo.parseDate("2014/05/07", "yyyy/MM/dd", "en-GB").getTime();
+                  
+                   
+                   this.data.WeekStartDate = '\/Date(' + wsd + ')\/';
+                   this.data.TimeSheetDate = '\/Date('+ tsd +')\/';
+
+                   
+                   this.data.Status ="Submitted";
  
                      $.ajax({
                         type: "POST",
-                         //url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
+                         url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
+                         //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
                         data: JSON.stringify(this.data),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -700,7 +716,7 @@
              
                 <a href="#tabstrip-TimeSheetWeekly" data-icon="globe">Summary</a> 
                  <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> 
-                <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>
+               <!-- <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>-->
             </div>
         </div>
     </div>
