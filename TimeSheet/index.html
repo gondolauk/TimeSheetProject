@@ -229,7 +229,9 @@
 
             data: new SummaryModel(),
             navigate: function (e)
-            {
+            {   
+                
+                debugger;
                 var wsd = kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
                 // alert(wsd);
                   var app = new kendo.mobile.Application();
@@ -300,7 +302,7 @@
              //data: new SummaryModel(),
             process: function (e)
             {
-                debugger;
+                 debugger;
                  
                  var action = e.button.element.context.innerText;
                  var  weekstartdate, timesheetdate, tsId;
@@ -311,7 +313,11 @@
                   if(action == "Edit")
                   {
                       //redirect to another view with parameter
-                      alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
+                      //  alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
+                       var app = new kendo.mobile.Application();
+                      app.navigate("#tabstrip-TimeSheetLog?wsd=" + weekstartdate + "&tsd=" + timesheetdate+ "&tsid="+ tsId , "Slide");
+
+                      
                   }
                   else if(action == "Delete")
                   {
@@ -569,11 +575,7 @@
                    var tsd = kendo.parseDate("2014/05/07", "yyyy/MM/dd", "en-GB").getTime();
                   
                    
-                   this.data.WeekStartDate = '\/Date(' + wsd + ')\/';
-                   this.data.TimeSheetDate = '\/Date('+ tsd +')\/';
-
-                   
-                   this.data.Status ="Submitted";
+                  
  
                      $.ajax({
                         type: "POST",
@@ -593,12 +595,12 @@
                },
 
                //load: function (timesheetId) {
-                    load: function () {
+                    load: function (tsid) {
                     $.ajax({
                         type: "GET",
                         // url: "http://localhost:8005/Service.svc/GetJson/" + + $("#timesheetIdtext").val() ,
                         
-                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + $("#timesheetIdtext").val() ,
+                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + tsid ,
                         //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
                         data: 1,
                         contentType: "application/json; charset=utf-8",
@@ -606,7 +608,10 @@
                         success: function (data) {
                             //  alert(data);
                            viewModel.data = data.GetTimeSheetByIdResult;
-                            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
+                            //viewModel.data.WeekStartDate = '\/Date(' + wsd + ')\/';
+                            //viewModel.data.TimeSheetDate = '\/Date('+ tsd +')\/';
+                            // viewModel.data.Status ="Submitted";
+                           kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
                         },
                         error: function (xhr) {
                             alert(xhr.responseText);
@@ -621,7 +626,7 @@
                   $.ajax({
                         type: "POST",
                       //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateTimeSheet/"  + this.data.TimeSheetId ,
                         data: JSON.stringify(this.data),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -663,11 +668,11 @@
              // {bar: "baz"}
               //  e.view.params[0].ToString()
               //  alert(e.view.params.TimeSheetId);
-              
-                if(e.view.params.TimeSheetId != undefined)
+                debugger;
+                if(e.view.params.tsid != undefined)
                {
                    // alert(e.view.params.TimeSheetId);
-                      viewModel.load(e.view.params.TimeSheetId);
+                      viewModel.load(e.view.params.tsid);
                   
                }
               
@@ -714,8 +719,8 @@
                 <a href="#/" data-icon="home">Home</a>
               <!--  <a href="#tabstrip-login" data-icon="contacts">Login</a> -->
              
-                <a href="#tabstrip-TimeSheetWeekly" data-icon="globe">Summary</a> 
-                 <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> 
+                <a href="#tabstrip-TimeSheetWeekly" data-icon="globe">Expense</a> 
+              <!--   <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> -->
                <!-- <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>-->
             </div>
         </div>
