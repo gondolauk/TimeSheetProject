@@ -26,7 +26,70 @@
         html .km-wp-light *:not(.k-label) > select {
             background: #fff;
         }
-    </style>
+        
+        .km-time-e:after,
+        .km-time-e:before
+        {
+           content: "\e089";
+         }
+        
+          .km-expense-e:after,
+        .km-expense-e:before
+        {
+           content: "\e0a9";
+         }
+        
+           .km-setting-e:after,
+        .km-setting-e:before
+        {
+           content: "\e0a4";
+         }
+        
+          .km-ios #listview-home .km-content {
+        background: url(../../content/shared/images/patterns/pattern2.png);
+        box-shadow: inset 0 0 30px #95764D;
+        -webkit-box-shadow: inset 0 0 30px #95764D;
+    }
+    .km-ios #listview-home .km-listview .km-list {
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        box-shadow: 0 1px 5px #95764D;
+        -webkit-box-shadow: 0 1px 5px #95764D;
+    }
+    .km-ios #listview-home .km-listview .km-list > li {
+        border: none;
+    }
+    .km-ios #listview-home .km-listview .km-list > li:last-child {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+    .km-ios #listview-home .km-navbar {
+        background: url(../../content/shared/images/patterns/pattern9.png);
+    }
+    .km-tablet .km-ios #listview-home .km-view-title {
+        color: #fff;
+        text-shadow: 0 -1px rgba(0,0,0,.5);
+    }
+    .km-ios #listview-home .km-navbar .km-button
+    {
+        background-color: #974d2e;
+    }
+    
+    #custom-listview .item-title {
+       
+    font-size: 1em;
+    line-height: 0em;
+   
+   
+    }
+   #custom-listview .item-info {
+    float: left;
+    font-size: 0.8em;
+    line-height: 0em;
+    margin: 0.5em 0.5em 0 .95em;
+    width: 45%;
+}
+</style>   
 </head>
 <body>
     <!--Home-->
@@ -85,63 +148,33 @@
 
  
    <div data-role="view"  data-title="Time & Expense - Weeks" id="tabstrip-TimeSheetWeekly" >
-      <div>     
+      <div>   
           <ul data-role="listview" data-source="myDataSource" data-template="my-template" data-header-template="header-template" id= "custom-listview" data-bind="click: navigate"></ul>
        </div>
        </div>
-    <div data-role="view"  data-title="Time & Expense - Weekly View" id="tabstrip-TimeSheetWeeklyView" data-show="getWeeklyPageParameters">
+    <div data-role="view"  data-title="Weekly View - TimeSheet" id="tabstrip-TimeSheetWeeklyView" data-show="getWeeklyPageParameters" data-init="initializeT">
+       <div>
+        <ul id="btnGroupT">            
+               <li>TimeSheet</li>
+                <li>Expense</li>
+               <li>Submit</li>
+        </ul>          
+    </div> 
          <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
       <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: process" ></ul> 
         </div>
+ 
+    <div data-role="view"  data-title="Weekly View - Expense" id="tabstrip-ExpenseWeeklyView" data-show="getExpenseParameters" data-init="initializeE">
+       <div>
+        <ul id="btnGroupE">            
+               <li>TimeSheet</li>
+                <li>Expense</li>
+               <li>Submit</li>
+        </ul>          
+    </div> 
+        <ul data-role="listview" data-source="weeklyexpenseviewDS" data-template="weeklyexpensedetail-template" data-header-template="weeklyexpenseheader-template" id= "weeklyexpenselistview"  data-bind="click:  processExpense" ></ul> 
+    </div>
 
-<style>
-    .km-ios #listview-home .km-content {
-        background: url(../../content/shared/images/patterns/pattern2.png);
-        box-shadow: inset 0 0 30px #95764D;
-        -webkit-box-shadow: inset 0 0 30px #95764D;
-    }
-    .km-ios #listview-home .km-listview .km-list {
-        border-radius: 10px;
-        -webkit-border-radius: 10px;
-        box-shadow: 0 1px 5px #95764D;
-        -webkit-box-shadow: 0 1px 5px #95764D;
-    }
-    .km-ios #listview-home .km-listview .km-list > li {
-        border: none;
-    }
-    .km-ios #listview-home .km-listview .km-list > li:last-child {
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
-    .km-ios #listview-home .km-navbar {
-        background: url(../../content/shared/images/patterns/pattern9.png);
-    }
-    .km-tablet .km-ios #listview-home .km-view-title {
-        color: #fff;
-        text-shadow: 0 -1px rgba(0,0,0,.5);
-    }
-    .km-ios #listview-home .km-navbar .km-button
-    {
-        background-color: #974d2e;
-    }
-    
-    #custom-listview .item-title {
-       
-    font-size: 1em;
-    line-height: 0em;
-   
-   
-    }
-   #custom-listview .item-info {
-    float: left;
-    font-size: 0.8em;
-    line-height: 0em;
-    margin: 0.5em 0.5em 0 .95em;
-    width: 45%;
-}
-
-
-</style>
     
 <script type="text/x-kendo-template" id="my-template" >
 <p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p> 
@@ -153,16 +186,30 @@
 
 
     <script type="text/x-kendo-template" id="weeklydetail-template">
-      #if(Project =="")
+      #if(Project =="" || Project == null)
          {#<a data-role="button" class="details-link" >Add</a>
           #}
        else
-       {# <H5 class="item-info">  #: Project # -  #: StHours # Hours </H5>
+       {# <H5 class="item-info">#: Customer # - #: Project # -  #: StHours # Hours </H5>
           <a data-role="button" class="details-link" id="Editbtn" data-id ="1" >Edit</a>
           <a data-role="button"  class="details-link" id="detelebtn" data-id ="2" >Delete</a>#} # 
 </script>
 
 <script type="text/x-kendo-template" id="weeklyheader-template">
+    <p class="item-info"> #= kendo.toString(kendo.parseDate(value), 'd')# </p>
+</script>
+    
+      <script type="text/x-kendo-template" id="weeklyexpensedetail-template">
+      #if(Project =="" || Project == null)
+         {#<a data-role="button" class="details-link" >Add</a>
+          #}
+       else
+       {# <H5 class="item-info">#: Customer # - #: Project # - #: ExpenseType # - £ #: GrossValue # </H5>
+          <a data-role="button" class="details-link" id="Editbtn" data-id ="1" >Edit</a>
+          <a data-role="button"  class="details-link" id="detelebtn" data-id ="2" >Delete</a>#} # 
+</script>
+
+<script type="text/x-kendo-template" id="weeklyexpenseheader-template">
     <p class="item-info"> #= kendo.toString(kendo.parseDate(value), 'd')# </p>
 </script>
     <script>
@@ -253,8 +300,9 @@
     
     <script type="text/javascript">      
     
-       
-               
+        // weeklyviewtime script
+        //gobal variable
+        var weeklyviewwds;
          weeklyviewDS = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -275,6 +323,7 @@
                         TimeSheetDate: { type: "date" },
                         StHours: { type: "number" },
                         OtHours: { type: "number" },
+                        Customer: {type: "string"},
 
                     }
                 },
@@ -294,10 +343,8 @@
         });
 
          
-        
          var WeeklyviewModel = kendo.observable({
-
-             
+         
            
              //data: new SummaryModel(),
             process: function (e)
@@ -355,7 +402,31 @@
         });
         
             kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
+           var app = new kendo.mobile.Application(document.body);
+            function initializeT(){
+ 
+                     $("#btnGroupT").kendoMobileButtonGroup({
+               index: 0,
+               selectOn: "up",
+               select: onButtonSelectT       
+        
+                 });
+               }
 
+          function onButtonSelectT(e){
+    
+              if(this.current().index() == 1)
+              {
+                  //expense weeklyview page
+                  debugger;
+                  var app = new kendo.mobile.Application();
+                  app.navigate("#tabstrip-ExpenseWeeklyView?q=" + weeklyviewwds , "Slide");
+                  
+              }
+           
+     
+        }
+        
            function getWeeklyPageParameters(e) {
            
                //   alert("1");
@@ -363,50 +434,202 @@
                //   alert("2");
                //  ();
                //new kendo.mobile.Application();
-               weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=" + wds;
+               weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet?q=" + wds;
                //   alert("3");
                //Read data source to update
               weeklyviewDS.read();
                //        alert(e.view.params.q);
+               weeklyviewwds = wds;
           }
         
          new kendo.mobile.Application();    
 
    </script>
-   
-     <div id="tabstrip-ExpenseLog" data-role="view" data-title="Time Log" data-init="initForm" data-use-native-scrolling="true" >
-                <form action="./index.html">
-        <ul data-role="listview" data-style="inset">
+    
+     <script type="text/javascript">      
+    
+        // weeklyviewexpense script
+         
+         //define data source
+            weeklyexpenseviewDS = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    // url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson?q=01/01/2014",
+                    //not define as this stage, it will be parsed dynamically in data-show events
+                    dataType: 'json'
+                }
+
+            },
+            schema: {
+                model: {
+                    id: "ExpenseId",
+                    fields: {
+
+                        Project: { type: "string" },
+                        Status: { type: "string" },
+                        Owner: { type: "string" },
+                        WeekStartDate: { type: "date" },
+                        ExpenseDate: { type: "date" },
+                        ExpenseDetails: { type: "string" },
+                        ExpenseType: { type: "string" },
+                        GrossValue : { type: "number"},
+                        VatValue : {type: "number"},
+                        NetValue : { type: "number"},
+                        Customer: {type: "string"},
+
+                    }
+                },
+
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.GetWeeklyExpensesResult;
+                },
+                type: "json"
+            },
+            serverPaging: true,
+            pageSize: 10,
+            serverSorting: true,
+            group: { field: "ExpenseDate" },
+
+
+        });
+         
+         
+           var WeeklyExpenseviewModel = kendo.observable({           
+             //data: new SummaryModel(),
+            processExpense: function (e)
+            {
+                 debugger;                 
+                 var action = e.button.element.context.innerText;
+                 var  weekstartdate, timesheetdate, tsId;
+                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
+                 expensedate =   kendo.toString(kendo.parseDate(e.dataItem.ExpenseDate), 'd');
+                 esId = e.dataItem.ExpenseId;
+                 
+                  if(action == "Edit")
+                  {
+                      //redirect to another view with parameter
+                      //  alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
+                       var app = new kendo.mobile.Application();
+                      app.navigate("#tabstrip-ExpenseLog?wsd=" + weekstartdate + "&tsd=" + expensedate+ "&esId="+ esId , "Slide");
+
+                      
+                  }
+                  else if(action == "Delete")
+                  {
+                      /* //delete record
+                        $.ajax({
+                        type: "DELETE",
+                        //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        // data: 1,
+                        //contentType: "application/json; charset=utf-8",
+                        // dataType: "jsonp",
+                       complete: function (xhr, status) {
+                                if (status === 'error' || !xhr.responseText) {
+                                    // alert(status);
+                         }
+                    else {
+                                   alert("Delete Success!")
+                          }
+                        }        
+                    });*/
+                  }
+                  else
+                  {
+                      //for adding function
+                      
+                  }            
+     
+
+            },
             
-            <li><a data-role="backbutton">Back</a><a data-role="button" data-click="onClick">DONE</a>    
+
+        });
+        
+           kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
+           var app = new kendo.mobile.Application(document.body);
+            function initializeE(){
+ 
+                     $("#btnGroupE").kendoMobileButtonGroup({
+               index: 1,
+               selectOn: "up",
+               select: onButtonSelect       
+        
+                 });
+               }
+
+          function onButtonSelect(e){
+    
+              if(this.current().index() == 0)
+              {
+                  //expense weeklyview page
+                  var app = new kendo.mobile.Application();
+                  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" +  weeklyviewwds , "Slide");
+                  
+              }
+           
+     
+        }
+                 
+          function getExpenseParameters(e) {
+              //   debugger;
+               wds = e.view.params.q;        
+              // weeklyexpenseviewDS.transport.options.read.url = "http://localhost:8005/Service.svc/Expense/GetExpense?q=" + wds;
+              weeklyexpenseviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetExpense?q=" + wds;
+               //Read data source to update
+               weeklyexpenseviewDS.read();
+               //        alert(e.view.params.q);
+          }
+        
+         new kendo.mobile.Application();    
+         
+    </script>
+   
+     <div id="tabstrip-ExpenseLog" data-role="view" data-title="Expense Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParametersE">
+                <form action="./index.html">
+              <ul>
+                  
+               
+            <li><a data-role="backbutton">Back</a><a data-role="button" data-bind="click: update">DONE</a>    
             </li>
            <li>
                 <label>Customer
-                    <select id="dropdown">
-                        <option value="First Option">EFA</option>
-                        <option value="Second Option">Spirax Spacro</option>
-                        <option value="Third Option">Trinity</option>
-                        <option value="Fourth Option">PunterSouthHall</option>
+                    <select id="dropdown" data-bind="value: data.Customer">
+                      <option value="EFA">EFA</option>
+                        <option value="Spirax">Spirax Spacro</option>
+                        <option value="Trinity">Trinity</option>
+                        <option value="PunterSouthHall">PunterSouthHall</option>
                     </select>
                 </label>
             </li>
               <li>
                 <label>Project
-                    <select id="Select1">
-                        <option value="First Option">Project 1</option>
-                        <option value="Second Option">Project 2</option>
-                        <option value="Third Option">Project 3</option>
-                        <option value="Fourth Option">Project 4</option>
-                        <option value="First Option">Project 5</option>
-                        <option value="Sixth Option">Project 6</option>
+                    <select id="Select1" data-bind="value: data.Project">
+                       <option value="p1">Project 1</option>
+                        <option value="p2">Project 2</option>
+                        <option value="p3">Project 3</option>
+                        <option value="p4">Project 4</option>
+                        <option value="p5">Project 5</option>
+                        <option value="p6">Project 6</option>
                     </select>
                 </label>
             </li>           
-              <ul data-role="listview" >
-   
+             <li>
+                <label>Expense Type
+                    <select id="Select1" data-bind="value: data.ExpenseType">
+                      <option value="Mileage">Mileage</option>
+                        <option value="Rail">Rail</option>
+                        <option value="Meals">Meals</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Hotel">Hotel</option>
+                        <option value="Training">Training</option>
+                    </select>
+                </label>
+            </li>          
             <li>
                 <label>Expense Detail
-                    <input type="text"  id="ExpenseDetail" />
+                    <input type="text"  id="ExpenseDetail" data-bind="value: data.ExpenseDetail"/>
                 </label>
             </li>
            
@@ -414,33 +637,33 @@
             <li>
                 <label>
                     Gross Value
-                    <input type="number" pattern="(\d{3})([\.])(\d{2})" />
+                    <input type="number" pattern="(\d{3})([\.])(\d{2})" data-bind="value: data.GrossValue"/>
                 </label>
             </li>
             <li>
                 <label>
                     VAT Value
-                      <input type="number" pattern="(\d{3})([\.])(\d{2})" />
+                      <input type="number" pattern="(\d{3})([\.])(\d{2})" data-bind="value: data.VatValue"/>
                 </label>
             </li>
                    <li>
                 <label>
                     NET Value
-                      <input type="number" pattern="(\d{3})([\.])(\d{2})" />
+                      <input type="number" pattern="(\d{3})([\.])(\d{2})" data-bind="value: data.NetValue"/>
                 </label>
             </li>
              <li>
                 <label>
                     Approve Notes
                     <br>
-                    <textarea style="resize: none">Note...</textarea>
+                    <textarea style="resize: none" data-bind="value: data.Note">Note...</textarea>
                 </label>
             </li>
-             </ul>
+         </ul>
          </form>       
     </div>      
      <!-- <div data-role="view" id="foo" data-show="fooShow">test</div>-->
-     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Sheet Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParameters">            
+     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Sheet Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParametersT">            
          <form action="./index.html">
         <ul >
             
@@ -600,7 +823,7 @@
                         type: "GET",
                         // url: "http://localhost:8005/Service.svc/GetJson/" + + $("#timesheetIdtext").val() ,
                         
-                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson/" + tsid ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet/" + tsid ,
                         //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
                         data: 1,
                         contentType: "application/json; charset=utf-8",
@@ -637,6 +860,8 @@
                         },
                         error: function (xhr) {
                             //  alert(xhr.responseText);
+                             //temp code
+                            alert("Updated Successfully!");
                         }
                     });
                 },
@@ -664,7 +889,7 @@
 
            kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
 
-          function getParameters(e) {
+          function getParametersT(e) {
              // {bar: "baz"}
               //  e.view.params[0].ToString()
               //  alert(e.view.params.TimeSheetId);
@@ -678,6 +903,120 @@
               
         }
    </script>    
+    
+     <script type="text/javascript">
+         //expens log scripts
+         
+            //define a model
+
+           var ExpenseModel = kendo.data.Model.define({
+               id: "ExpenseId",
+               fields: {
+                        Project: { type: "string" },
+                        Status: { type: "string" },
+                        Owner: { type: "string" },
+                        WeekStartDate: { type: "date" },
+                        ExpenseDate: { type: "date" },
+                        ExpenseDetails: { type: "string" },
+                        ExpenseType: { type: "string" },
+                        GrossValue : { type: "number"},
+                        VatValue : {type: "number"},
+                        NetValue : { type: "number"},
+                        Customer: {type: "string"},
+               }
+           });
+
+
+           var ExpenseViewModel = kendo.observable({
+
+               data: new ExpenseModel(),
+               create: function (e) {
+                   /* debugger; 
+                   var wsd = kendo.parseDate("2014/05/05", "yyyy/MM/dd", "en-GB").getTime();
+                   var tsd = kendo.parseDate("2014/05/07", "yyyy/MM/dd", "en-GB").getTime();
+                  
+                     $.ajax({
+                        type: "POST",
+                         url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
+                         //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
+                        data: JSON.stringify(this.data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            alert("new timesheet has been created with a new ID : " + data);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });   */                
+                   
+               },
+
+               //load: function (timesheetId) {
+                    load: function (esid) {
+                    $.ajax({
+                        type: "GET",
+                        // url: "http://localhost:8005/Service.svc/Service.svc/GetExpense/" + esid ,                       
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetExpense/" + esid ,
+                        data: 1,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            //  alert(data);
+                           ExpenseViewModel.data = data.GetExpenseByIdResult;
+                           kendo.bind($("#tabstrip-ExpenseLog"), ExpenseViewModel);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });
+
+                
+            },
+               
+              update: function () {
+                  // alert(this.data.TimeSheetId + "- " + this.data.StHours );
+                  $.ajax({
+                        type: "POST",
+                      //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateExpense/"  + this.data.ExpenseId ,
+                        data: JSON.stringify(this.data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            // alert("Updated Successfully" + data);
+                            // viewModel.data = data.GetTimeSheetByIdResult;
+                            // kendo.bind($("#view"), viewModel);
+                        },
+                        error: function (xhr) {
+                            //  alert(xhr.responseText);
+                            //temp code
+                            alert("Updated Successfully!");
+                        }
+                    });
+                },
+                destory : function () {
+                },
+
+
+           });
+
+           kendo.bind($("#tabstrip-ExpenseLog"), ExpenseViewModel);
+
+          function getParametersE(e) {
+             // {bar: "baz"}
+              //  e.view.params[0].ToString()
+              //  alert(e.view.params.TimeSheetId);
+                debugger;
+                if(e.view.params.esId != undefined)
+               {
+                   // alert(e.view.params.TimeSheetId);
+                      ExpenseViewModel.load(e.view.params.esId);
+                  
+               }
+              
+        }
+    </script>
 <script>
     function initForm() {
         var body = $(".km-pane");
@@ -719,7 +1058,9 @@
                 <a href="#/" data-icon="home">Home</a>
               <!--  <a href="#tabstrip-login" data-icon="contacts">Login</a> -->
              
-                <a href="#tabstrip-TimeSheetWeekly" data-icon="globe">Expense</a> 
+                <a href="#tabstrip-TimeSheetWeekly" data-icon="time-e">WeeklyView</a> 
+                <a href="" data-icon="expense-e">Expense</a> 
+                 <a href="" data-icon="setting-e">Setting</a> 
               <!--   <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> -->
                <!-- <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>-->
             </div>
