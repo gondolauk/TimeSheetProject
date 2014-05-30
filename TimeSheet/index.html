@@ -1023,14 +1023,14 @@
 
         if (kendo.ui.DropDownList) {
             $("#dropdown").kendoDropDownList({
-                // The options are needed only for the desktop demo, remove them for mobile.
-                //  popup: { appendTo: body },
-                // animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
+                //The options are needed only for the desktop demo, remove them for mobile.
+                  popup: { appendTo: body },
+                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
             });
         }
 
         if (kendo.ui.Slider) {
-            $("#slider").kendoSlider({ tooltip: { enabled: false } });
+            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
         }
         
         
@@ -1059,7 +1059,7 @@
               <!--  <a href="#tabstrip-login" data-icon="contacts">Login</a> -->
              
                 <a href="#tabstrip-TimeSheetWeekly" data-icon="time-e">WeeklyView</a> 
-                <a href="" data-icon="expense-e">Expense</a> 
+            <!--    <a href="" data-icon="expense-e">Expense</a> -->
                  <a href="" data-icon="setting-e">Setting</a> 
               <!--   <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> -->
                <!-- <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>-->
