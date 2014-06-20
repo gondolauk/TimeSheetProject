@@ -1,4 +1,7 @@
 (function (global) {
+    
+    debugger;
+    
     var LoginViewModel,
         app = global.app = global.app || {};
 
