@@ -149,32 +149,17 @@
           <ul data-role="listview" data-source="myDataSource" data-template="my-template" data-header-template="header-template" id= "custom-listview" data-bind="click: navigate"></ul>
        </div>
        </div>
-  
-    <div data-role="view"  data-title="Weekly View - TimeSheet" id="tabstrip-TimeSheetWeeklyView"  data-init="initializeT">
-       <div>
-        <ul id="btnGroupT">            
-               <li>TimeSheet</li>
-                <li>Expense</li>
-               <li>Submit</li>
-        </ul>          
-    </div> 
-         <!--<a data-role="button" href="#tabstrip-TimeSheetLog?TimeSheetId=2">Edit with <strong>TimeSheet</strong> with TimeSheetId parameter</a>-->
-      <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: process" ></ul> 
-        </div>
- 
-    <div data-role="view"  data-title="Weekly View - Expense" id="tabstrip-ExpenseWeeklyView"  data-init="initializeE">  
-        <div>
-        <ul id="btnGroupE">            
-               <li>TimeSheet</li>
-                <li>Expense</li>
-               <li>Submit</li>
-        </ul>          
-    </div> 
-        <ul data-role="listview" data-source="weeklyexpenseviewDS" data-template="weeklyexpensedetail-template" data-header-template="weeklyexpenseheader-template" id= "weeklyexpenselistview"  data-bind="click:  processExpense" ></ul> 
-    </div>
-  
     
-    <script type="text/x-kendo-template" id="my-template" >
+    
+  <div data-role="view" id="tabstrip-WeeklyView" data-show="mobileViewInit" data-title="Weekly View" data-init="initialize">
+    <ul id="select-option">
+        <li>TimeSheet</li>
+        <li>Expense</li>
+    </ul>
+     <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: process" ></ul> 
+     <ul data-role="listview" data-source="weeklyexpenseviewDS" data-template="weeklyexpensedetail-template" data-header-template="weeklyexpenseheader-template" id= "weeklyexpenselistview"  data-bind="click:  processExpense" ></ul> 
+    </div>    
+<script type="text/x-kendo-template" id="my-template" >
 <p class="item-info" >#= kendo.toString(kendo.parseDate(WeekBegin), 'd')#</p> 
   <a data-role="button" class="details-link"  >>></a>
 </script>
@@ -270,8 +255,8 @@
                 var wsd = kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
                 // alert(wsd);
                   var app = new kendo.mobile.Application();
-                  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
-
+                  app.navigate("#tabstrip-WeeklyView?q=" + wsd , "Slide");
+              
             },
             
          
@@ -390,36 +375,16 @@
 
         });
         
-          kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
-           var app = new kendo.mobile.Application(document.body);
-            function initializeT(e){
-                //only need to load once;
-               getWeeklyPageParameters(e)                
-               //alert("initialzeT");
-               $("#btnGroupT").kendoMobileButtonGroup({
-               index: 0,
-               selectOn: "up",
-               select: onButtonSelectT       
         
-                 });
-               }
-
-          function onButtonSelectT(e){
-    
-              if(this.current().index() == 1)
-              {
-                  //expense weeklyview page
-                  debugger;
-                  var app = new kendo.mobile.Application();
-                  app.navigate("#tabstrip-ExpenseWeeklyView?q=" + weeklyviewwds , "Slide");
-                  
-              }
-             
-           
-     
-        }
-        
-           function getWeeklyPageParameters(e) {
+        // var app = new kendo.mobile.Application(document.body);
+            
+         function initialize(e){
+              getExpenseParameters(e);
+              getWeeklyPageParameters(e);  
+            
+            }
+                       
+          function getWeeklyPageParameters(e) {
            
                //alert("1");
                wds = e.view.params.q;
@@ -432,17 +397,10 @@
               weeklyviewDS.read();
                //        alert(e.view.params.q);
                weeklyviewwds = wds;
-          }
-        
-         new kendo.mobile.Application();    
-
-   </script>
-    
-     <script type="text/javascript">      
+          }       
+       
         
         // weeklyviewexpense script
-         
-         //error handling function    
  
          
          //define data source
@@ -546,29 +504,9 @@
 
         });
         
-          kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
-           var app = new kendo.mobile.Application(document.body);
-            function initializeE(e){
-              getExpenseParameters(e);
-               $("#btnGroupE").kendoMobileButtonGroup({
-               index: 1,
-               selectOn: "up",
-                   select: onButtonSelectE })
-               }
-
-          function onButtonSelectE(e){
-    
-              if(this.current().index() == 0)
-              {
-                  //expense weeklyview page
-                  var app = new kendo.mobile.Application();
-                  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" +  weeklyviewwds , "Slide");
-                  
-              }
-           
-     
-        }
-                 
+         
+              
+                       
           function getExpenseParameters(e) {
               //   debugger;
               
@@ -583,7 +521,25 @@
                //        alert(e.view.params.q);
           }
         
-         new kendo.mobile.Application();    
+        
+          kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
+          kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
+          
+          var app = new kendo.mobile.Application(document.body);
+        
+          function mobileViewInit() {
+                //debugger;
+                 var listviews = this.element.find("ul.km-listview");
+
+                  $("#select-option").kendoMobileButtonGroup({
+                  select: function(e) {
+                      debugger;
+                    listviews.hide().eq(this.current().index()).show();
+            },
+            index: 0
+        });
+    }
+        //  new kendo.mobile.Application();    
          
     </script>
    
