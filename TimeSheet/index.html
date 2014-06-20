@@ -93,6 +93,7 @@
 </head>
 <body>
     <!--Home-->
+ 
     <div id="tabstrip-home"
         data-role="view"
         data-title="Home">
@@ -105,14 +106,11 @@
             </p>
             <!--<div class="img"></div>-->
         </div>
-    </div>
+    </div> 
+
 
     <!--Login-->
-    <div id="tabstrip-login"
-        data-role="view"
-        data-title="Login"
-        data-model="app.loginService.viewModel">
-
+    <div id="tabstrip-login" data-role="view" data-title="Login" data-model="app.loginService.viewModel">
         <div class="view-content">
             <div class="logo"></div>
             <h3 data-bind="invisible: isLoggedIn">Enter your credentials:</h3>
@@ -177,7 +175,7 @@
 
     
 <script type="text/x-kendo-template" id="my-template" >
-<p class="item-info" >#= kendo.toString(kendo.parseDate(WeekStartDate), 'd')#</p> 
+<p class="item-info" >#= kendo.toString(kendo.parseDate(WeekBegin), 'd')#</p> 
   <a data-role="button" class="details-link"  >>></a>
 </script>
 <script type="text/x-kendo-template" id="header-template">
@@ -186,11 +184,11 @@
 
 
     <script type="text/x-kendo-template" id="weeklydetail-template">
-      #if(Project =="" || Project == null)
+      #if(ProjectName =="" || ProjectName == null)
          {#<a data-role="button" class="details-link" >Add</a>
           #}
        else
-       {# <H5 class="item-info">#: Customer # - #: Project # -  #: StHours # Hours </H5>
+       {# <H5 class="item-info">#: Customer # - #: ProjectName # -  #: StHours # Hours </H5>
           <a data-role="button" class="details-link" id="Editbtn" data-id ="1" >Edit</a>
           <a data-role="button"  class="details-link" id="detelebtn" data-id ="2" >Delete</a>#} # 
 </script>
@@ -200,11 +198,11 @@
 </script>
     
       <script type="text/x-kendo-template" id="weeklyexpensedetail-template">
-      #if(Project =="" || Project == null)
+      #if(ProjectName =="" || ProjectName == null)
          {#<a data-role="button" class="details-link" >Add</a>
           #}
        else
-       {# <H5 class="item-info">#: Customer # - #: Project # - #: ExpenseType # - £ #: GrossValue # </H5>
+       {# <H5 class="item-info">#: CustomerName # - #: ProjectName # - #: ExpenseTypeName # - £ #: GrossValue # </H5>
           <a data-role="button" class="details-link" id="Editbtn" data-id ="1" >Edit</a>
           <a data-role="button"  class="details-link" id="detelebtn" data-id ="2" >Delete</a>#} # 
 </script>
@@ -217,15 +215,9 @@
          var SummaryModel = kendo.data.Model.define({
                    id: "TimeSheetId",
                     fields: {
-                        // Customer: { type: "string" },
-                        //Project: { type: "string" },
-                        Status: { type: "string" },
-                        // Owner: { type: "string" },
-                        WeekStartDate: { type: "date" }
-                        //StHours: { type: "number" },
-                        //OtHours: { type: "number" },
-                        // Task: { type: "string" },
-                        // Note: { type: "string" },
+                       
+                       StatusName: { type: "string" },                       
+                       WeekBegin: { type: "date" }                      
 
                     }                   
                
@@ -234,7 +226,9 @@
         var myDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson",
+                    // url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson",
+                    // url: "http://azuretocrm.cloudapp.net/Service1.svc/GetJson",
+                    url: "http://localhost:61397/Service1.svc/GetJson",
                     dataType: 'json'
                 }
 
@@ -243,15 +237,9 @@
                       model: {
                     id: "TimeSheetId",
                     fields: {
-                        // Customer: { type: "string" },
-                        //Project: { type: "string" },
-                        Status: { type: "string" },
-                        // Owner: { type: "string" },
-                        WeekStartDate: { type: "date", },
-                        //StHours: { type: "number" },
-                        //OtHours: { type: "number" },
-                        // Task: { type: "string" },
-                        // Note: { type: "string" },
+                       
+                        StatusName: { type: "string" },                      
+                        WeekBegin: { type: "date" },
 
                     }
                                         
@@ -265,7 +253,7 @@
             serverPaging: true,
             pageSize: 10,
             serverSorting: true,
-            group: { field: "Status" }
+            group: { field: "StatusName" }
         });
 
        
@@ -279,7 +267,7 @@
             {   
                 
                 debugger;
-                var wsd = kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
+                var wsd = kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
                 // alert(wsd);
                   var app = new kendo.mobile.Application();
                   app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
@@ -291,7 +279,7 @@
 
         });
 
-        kendo.bind($("#tabstrip-TimeSheetWeekly"), SummaryviewModel);
+         kendo.bind($("#tabstrip-TimeSheetWeekly"), SummaryviewModel);
 
      
 
@@ -313,31 +301,31 @@
             },
             schema: {
                 model: {
-                    id: "TimeSheetId",
+                    id: "TimeSheetEntryId",
                     fields: {
 
-                        Project: { type: "string" },
-                        Status: { type: "string" },
+                        ProjectName: { type: "string" },
+                        StatusName: { type: "string" },
                         Owner: { type: "string" },
-                        WeekStartDate: { type: "date" },
-                        TimeSheetDate: { type: "date" },
+                        WeekBegin: { type: "date" },
+                        TimeSheetEntryDate: { type: "date" },
                         StHours: { type: "number" },
                         OtHours: { type: "number" },
-                        Customer: {type: "string"},
+                        CustomerName: {type: "string"},
 
                     }
                 },
 
                 parse: function (data) {
                     //result comes from svc call. e.g
-                    return data.GetWeeklyTimeSheetResult;
+                    return data.GetWeeklyTimeSheetEntryResult;
                 },
                 type: "json"
             },
             serverPaging: true,
             pageSize: 10,
             serverSorting: true,
-            group: { field: "TimeSheetDate" },
+            group: { field: "TimeSheetEntryDate" },
 
 
         });
@@ -353,8 +341,8 @@
                  
                  var action = e.button.element.context.innerText;
                  var  weekstartdate, timesheetdate, tsId;
-                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekStartDate), 'd');
-                 timesheetdate =   kendo.toString(kendo.parseDate(e.dataItem.TimeSheetDate), 'd');
+                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
+                 timesheetdate =   kendo.toString(kendo.parseDate(e.dataItem.TimeSheetEntryDate), 'd');
                  tsId = e.dataItem.TimeSheetId;
                  
                   if(action == "Edit")
@@ -401,7 +389,7 @@
 
         });
         
-            kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
+          kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
            var app = new kendo.mobile.Application(document.body);
             function initializeT(){
  
@@ -432,9 +420,10 @@
                //   alert("1");
                wds = e.view.params.q;
                //   alert("2");
-               //  ();
                //new kendo.mobile.Application();
-               weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet?q=" + wds;
+               // weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet?q=" + wds;
+               // weeklyviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet?q=" + wds;
+                   weeklyviewDS.transport.options.read.url= "http://localhost:61397/Service1.svc/GetTimeSheet?q=" + wds;               
                //   alert("3");
                //Read data source to update
               weeklyviewDS.read();
@@ -547,7 +536,7 @@
 
         });
         
-           kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
+          kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
            var app = new kendo.mobile.Application(document.body);
             function initializeE(){
  
@@ -1056,10 +1045,9 @@
         <div data-role="footer">
             <div data-role="tabstrip">
                 <a href="#/" data-icon="home">Home</a>
-              <!--  <a href="#tabstrip-login" data-icon="contacts">Login</a> -->
-             
+               <!-- <a href="#tabstrip-login" data-icon="contacts">Login</a>   -->           
                 <a href="#tabstrip-TimeSheetWeekly" data-icon="time-e">WeeklyView</a> 
-            <!--    <a href="" data-icon="expense-e">Expense</a> -->
+                 <!--    <a href="" data-icon="expense-e">Expense</a> -->
                  <a href="" data-icon="setting-e">Setting</a> 
               <!--   <a href="#tabstrip-TimeSheetWeeklyView" data-icon="globe">Weekly View</a> -->
                <!-- <a href="#tabstrip-TimeSheetLog" data-icon="globe">Log</a>-->
