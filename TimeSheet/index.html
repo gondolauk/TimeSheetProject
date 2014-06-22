@@ -156,7 +156,7 @@
         <li>TimeSheet</li>
         <li>Expense</li>
     </ul>
-     <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: process" ></ul> 
+     <ul data-role="listview" data-source="weeklyviewDS" data-template="weeklydetail-template" data-header-template="weeklyheader-template" id= "weeklylistview"  data-bind="click: processTimeSheet" ></ul> 
      <ul data-role="listview" data-source="weeklyexpenseviewDS" data-template="weeklyexpensedetail-template" data-header-template="weeklyexpenseheader-template" id= "weeklyexpenselistview"  data-bind="click:  processExpense" ></ul> 
     </div>    
 <script type="text/x-kendo-template" id="my-template" >
@@ -319,12 +319,10 @@
          
          var WeeklyviewModel = kendo.observable({
          
-           
-             //data: new SummaryModel(),
-            process: function (e)
+             //Handle button click event on TimeSheet Form
+            processTimeSheet: function (e)
             {
-                 debugger;
-                 
+                 debugger;                 
                  var action = e.button.element.context.innerText;
                  var  weekstartdate, timesheetdate, tsId;
                  weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
@@ -371,10 +369,56 @@
                 //  app.navigate("#tabstrip-TimeSheetWeeklyView?q=" + wsd , "Slide");
 
             },
-            
+             //Handle button click event on Expense Form
+            processExpense: function (e)
+            {
+                debugger;                 
+                 var action = e.button.element.context.innerText;
+                 var  weekstartdate, timesheetdate, tsId;
+                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
+                 expensedate =   kendo.toString(kendo.parseDate(e.dataItem.ExpenseEntryDate), 'd');
+                 esId = e.dataItem.ExpenseId;
+                 
+                  if(action == "Edit")
+                  {
+                      //redirect to another view with parameter
+                      //  alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
+                       var app = new kendo.mobile.Application();
+                      app.navigate("#tabstrip-ExpenseLog?wsd=" + weekstartdate + "&tsd=" + expensedate+ "&esId="+ esId , "Slide");
 
+                      
+                  }
+                  else if(action == "Delete")
+                  {
+                      /* //delete record
+                        $.ajax({
+                        type: "DELETE",
+                        //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
+                        // data: 1,
+                        //contentType: "application/json; charset=utf-8",
+                        // dataType: "jsonp",
+                       complete: function (xhr, status) {
+                                if (status === 'error' || !xhr.responseText) {
+                                    // alert(status);
+                         }
+                    else {
+                                   alert("Delete Success!")
+                          }
+                        }        
+                    });*/
+                  }
+                  else
+                  {
+                      //for adding function
+                      
+                  }            
+     
+
+            },
         });
         
+          kendo.bind($("#tabstrip-WeeklyView"), WeeklyviewModel);
         
         // var app = new kendo.mobile.Application(document.body);
             
@@ -452,60 +496,6 @@
         });
          
          
-           var WeeklyExpenseviewModel = kendo.observable({           
-             //data: new SummaryModel(),
-            processExpense: function (e)
-            {
-               //debugger;                 
-                 var action = e.button.element.context.innerText;
-                 var  weekstartdate, timesheetdate, tsId;
-                 weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
-                 expensedate =   kendo.toString(kendo.parseDate(e.dataItem.ExpenseEntryDate), 'd');
-                 esId = e.dataItem.ExpenseId;
-                 
-                  if(action == "Edit")
-                  {
-                      //redirect to another view with parameter
-                      //  alert("TimeSheetId:" + tsId + " WSDate : " + weekstartdate + " timesheetDate :" + timesheetdate);
-                       var app = new kendo.mobile.Application();
-                      app.navigate("#tabstrip-ExpenseLog?wsd=" + weekstartdate + "&tsd=" + expensedate+ "&esId="+ esId , "Slide");
-
-                      
-                  }
-                  else if(action == "Delete")
-                  {
-                      /* //delete record
-                        $.ajax({
-                        type: "DELETE",
-                        //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
-                        // data: 1,
-                        //contentType: "application/json; charset=utf-8",
-                        // dataType: "jsonp",
-                       complete: function (xhr, status) {
-                                if (status === 'error' || !xhr.responseText) {
-                                    // alert(status);
-                         }
-                    else {
-                                   alert("Delete Success!")
-                          }
-                        }        
-                    });*/
-                  }
-                  else
-                  {
-                      //for adding function
-                      
-                  }            
-     
-
-            },
-            
-
-        });
-        
-         
-              
                        
           function getExpenseParameters(e) {
               //   debugger;
@@ -521,10 +511,6 @@
                //        alert(e.view.params.q);
           }
         
-        
-          kendo.bind($("#tabstrip-TimeSheetWeeklyView"), WeeklyviewModel);
-          kendo.bind($("#tabstrip-ExpenseWeeklyView"), WeeklyExpenseviewModel);
-          
           var app = new kendo.mobile.Application(document.body);
         
           function mobileViewInit() {
@@ -552,36 +538,26 @@
             </li>
            <li>
                 <label>Customer
-                    <select id="dropdown" data-bind="value: data.Customer">
-                      <option value="EFA">EFA</option>
-                        <option value="Spirax">Spirax Spacro</option>
-                        <option value="Trinity">Trinity</option>
-                        <option value="PunterSouthHall">PunterSouthHall</option>
-                    </select>
+                   <select data-bind="source: Custs"
+                           data-text-field="Name"
+                           data-value-field="Id"
+                           data-role="dropdownlist"></select>
                 </label>
             </li>
               <li>
                 <label>Project
-                    <select id="Select1" data-bind="value: data.Project">
-                       <option value="p1">Project 1</option>
-                        <option value="p2">Project 2</option>
-                        <option value="p3">Project 3</option>
-                        <option value="p4">Project 4</option>
-                        <option value="p5">Project 5</option>
-                        <option value="p6">Project 6</option>
-                    </select>
+                   <select data-bind="source: Projs"
+                           data-text-field="Name"
+                           data-value-field="Id"
+                           data-role="dropdownlist"></select>  
                 </label>
             </li>           
              <li>
                 <label>Expense Type
-                    <select id="Select1" data-bind="value: data.ExpenseType">
-                      <option value="Mileage">Mileage</option>
-                        <option value="Rail">Rail</option>
-                        <option value="Meals">Meals</option>
-                        <option value="Mobile">Mobile</option>
-                        <option value="Hotel">Hotel</option>
-                        <option value="Training">Training</option>
-                    </select>
+                     <select data-bind="source: Types"
+                           data-text-field="Name"
+                           data-value-field="Id"
+                           data-role="dropdownlist"></select>  
                 </label>
             </li>          
             <li>
@@ -632,38 +608,27 @@
           <!--  <a data-role="button"data-bind="click: load">Load</a>  -->
             <a data-role="button" data-bind="click: update">Done</a> 
           <!--    <a data-role="button" data-bind="click: destory">Delete</a> -->
-              <li>
-          
+              <li>          
                 <label>Customer
-                    <select id="Select2"  data-bind="value: data.Customer">
-                        <option value="EFA">EFA</option>
-                        <option value="Spirax">Spirax Spacro</option>
-                        <option value="Trinity">Trinity</option>
-                        <option value="PunterSouthHall">PunterSouthHall</option>
-                    </select>
-                </label>
-           
+                   <select data-bind="source: Custs"
+                           data-text-field="Name"
+                           data-value-field="Id"
+                           data-role="dropdownlist"></select>
+                 </label>           
             </li>
               <li>
                 <label>Project
-                    <select id="Select3" data-bind="value: data.Project">
-                        <option value="p1">Project 1</option>
-                        <option value="p2">Project 2</option>
-                        <option value="p3">Project 3</option>
-                        <option value="p4">Project 4</option>
-                        <option value="p5">Project 5</option>
-                        <option value="p6">Project 6</option>
-                    </select>
-                </label>
-                       
-            </li>
-   
+                    <select data-bind="source: Projs"
+                           data-text-field="Name"
+                           data-value-field="Id"
+                           data-role="dropdownlist"></select>                
+                </label>                      
+            </li>  
             <li>
                 <label>Task
                     <input type="text"  id="TaskName" data-bind="value: data.Task"/>
                 </label>
-            </li>
-           
+            </li>         
          
             <li>
                 <label>
@@ -690,18 +655,20 @@
     
        <script type="text/javascript">
            //define a model
-
+                    
+          
            var Model = kendo.data.Model.define({
-               id: "TimeSheetId",
+               id: "TimeSheetEntryId",
                fields: {
-                   Customer: { type: "string" },
-                   Project: { type: "string" },
-                   Status: { type: "string" },
+                   CustomerId: { type: "string" },
+                   ProjectId: { type: "string" },
+                   StatusName: { type: "string" },
                    Owner: { type: "string" },
                    StHours: { type: "number" },
                    OtHours: { type: "number" },
                    Task: { type: "string" },
-                   Note: { type: "string" }
+                   Note: { type: "string" },
+                   Rechargeable { type: "bool" }
                }
            });
 
@@ -733,8 +700,8 @@
                schema: {
                    model: Model
                }
-           });
-
+           });  
+               
 
            var viewModel = kendo.observable({
 
@@ -767,7 +734,10 @@
                         type: "GET",
                         // url: "http://localhost:8005/Service.svc/GetJson/" + + $("#timesheetIdtext").val() ,
                         
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet/" + tsid ,
+                        //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet/" + tsid ,
+                        //url: "http://azuretocrm.cloudapp.net/Service1.svc/TimeSheetEntry/" + tsid
+                        url: "http://localhost:61397/Service1.svc/TimeSheetEntry/" + tsid
+                        
                         //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
                         data: 1,
                         contentType: "application/json; charset=utf-8",
@@ -787,12 +757,12 @@
 
                 
             },
-               
+             
               update: function () {
                   // alert(this.data.TimeSheetId + "- " + this.data.StHours );
                   $.ajax({
                         type: "POST",
-                      //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
+                        //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
                         url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateTimeSheet/"  + this.data.TimeSheetId ,
                         data: JSON.stringify(this.data),
                         contentType: "application/json; charset=utf-8",
@@ -837,13 +807,16 @@
              // {bar: "baz"}
               //  e.view.params[0].ToString()
               //  alert(e.view.params.TimeSheetId);
-                debugger;
-                if(e.view.params.tsid != undefined)
-               {
-                   // alert(e.view.params.TimeSheetId);
-                      viewModel.load(e.view.params.tsid);
+              //  debugger;
+               
+              // viewModel.loadProjects();              
+              //  if(e.view.params.tsid != undefined)
+              //  {
+                   // alert(e.view.params.TimeSheetId);                      
+              //    viewModel.load(e.view.params.tsid);
                   
-               }
+              //  }
+              alert("12");
               
         }
    </script>    
@@ -964,7 +937,7 @@
     <script>
     function initForm() {
         var body = $(".km-pane");
-
+        debugger;
         if (kendo.ui.DropDownList) {
             $("#dropdown").kendoDropDownList({
                 //The options are needed only for the desktop demo, remove them for mobile.
@@ -977,8 +950,93 @@
             // $("#slider").kendoSlider({ tooltip: { enabled: false } });
         }
         
+                
+       var c = kendo.observable({
+           //selectedProduct: {  },
+             Custs: new kendo.data.DataSource({
+             transport: {
+             read: {
+             url: "http://localhost:61397/Service1.svc/GetCustomers",
+             dataType: "json"
+             }
+             },
+                 
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+
+                        Id: { type: "string" },
+                        Name: { type: "string" },                      
+
+                    }
+                },
+
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.GetCustomersResult;
+                },
+                type: "json"
+            },
+            }),          
+             Projs: new kendo.data.DataSource({
+             transport: {
+             read: {
+             url: "http://localhost:61397/Service1.svc/Projects",
+             dataType: "json"
+             }
+             },
+                 
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+
+                        Id: { type: "string" },
+                        Name: { type: "string" },                      
+
+                    }
+                },
+
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.ProjectsResult;
+                },
+                type: "json"
+            },
+            }),
+             Types: new kendo.data.DataSource({
+             transport: {
+             read: {
+             url: "http://localhost:61397/Service1.svc/GetExpenseType",
+             dataType: "json"
+             }
+             },
+                 
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+
+                        Id: { type: "string" },
+                        Name: { type: "string" },                      
+
+                    }
+                },
+
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.GetExpenseTypeResult;
+                },
+                type: "json"
+            },
+            }),          
+      });
         
+    
         
+        kendo.bind(document.body, c);
+      
         
     }
 </script>
