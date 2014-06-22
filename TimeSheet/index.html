@@ -327,7 +327,7 @@
                  var  weekstartdate, timesheetdate, tsId;
                  weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
                  timesheetdate =   kendo.toString(kendo.parseDate(e.dataItem.TimeSheetEntryDate), 'd');
-                 tsId = e.dataItem.TimeSheetId;
+                 tsId = e.dataItem.TimeSheetEntryId;
                  
                   if(action == "Edit")
                   {
@@ -377,7 +377,7 @@
                  var  weekstartdate, timesheetdate, tsId;
                  weekstartdate =   kendo.toString(kendo.parseDate(e.dataItem.WeekBegin), 'd');
                  expensedate =   kendo.toString(kendo.parseDate(e.dataItem.ExpenseEntryDate), 'd');
-                 esId = e.dataItem.ExpenseId;
+                 esId = e.dataItem.ExpenseEntryId;
                  
                   if(action == "Edit")
                   {
@@ -658,59 +658,7 @@
        <script type="text/javascript">
            //define a model
                     
-          
-          
-           // kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
-
-          function getParametersT(e) {
-              //    alert("getParameters");
-             // {bar: "baz"}
-              //  e.view.params[0].ToString()
-              //  alert(e.view.params.TimeSheetId);
-                debugger;
-               
-              // viewModel.loadProjects();              
-              if(e.view.params.tsid != undefined)
-              {                                    
-                      TimeSheetViewModel.load(e.view.params.tsid);
-                  
-               }
-              //  alert("12");
-              
-        }
-   </script>    
-    
-     <script type="text/javascript">
-                
-      
-          function getParametersE(e) {
-          
-               if(e.view.params.esId != undefined)
-               {
-                   // alert(e.view.params.TimeSheetId);
-                      ExpenseViewModel.load(e.view.params.esId);
-                  
-                }
-              
-        }
-    </script>
-    <script>
-    function initTimeSheet() {
-        var body = $(".km-pane");
-        debugger;
-        if (kendo.ui.DropDownList) {
-            $("#dropdown").kendoDropDownList({
-                //The options are needed only for the desktop demo, remove them for mobile.
-                  popup: { appendTo: body },
-                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
-            });
-        }
-
-        if (kendo.ui.Slider) {
-            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
-        }
-        
-           var Model = kendo.data.Model.define({
+               var Model = kendo.data.Model.define({
                id: "TimeSheetEntryId",
                fields: {
                    CustomerId: { type: "string" },
@@ -787,7 +735,7 @@
                         dataType: "json",
                         success: function (data) {
                             //  alert(data);
-                         viewModel.data = data.TimeSheetEntryResult;
+                         TimeSheetViewModel.data = data.GetTimeSheetByIdResult;
                          kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
                         },
                         error: function (xhr) {
@@ -840,25 +788,30 @@
         
         // kendo.bind(document.body, TimeSheetViewModel);
           kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
-      
-       
-    }
-    function initExpense() {
-        var body = $(".km-pane");
-        debugger;
-        if (kendo.ui.DropDownList) {
-            $("#dropdown").kendoDropDownList({
-                //The options are needed only for the desktop demo, remove them for mobile.
-                  popup: { appendTo: body },
-                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
-            });
-        }
+          
+           // kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
 
-        if (kendo.ui.Slider) {
-            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
+          function getParametersT(e) {
+              //    alert("getParameters");
+             // {bar: "baz"}
+              //  e.view.params[0].ToString()
+              //  alert(e.view.params.TimeSheetId);
+                debugger;
+               
+              // viewModel.loadProjects();              
+              if(e.view.params.tsid != undefined)
+              {                                    
+                      TimeSheetViewModel.load(e.view.params.tsid);
+                  
+               }
+              //  alert("12");
+              
         }
-        
-           var ExpenseModel = kendo.data.Model.define({
+   </script>    
+    
+     <script type="text/javascript">
+                
+        var ExpenseModel = kendo.data.Model.define({
                id: "ExpenseId",
                fields: {
                         ProjectId: { type: "string" },
@@ -1004,6 +957,53 @@
                
           kendo.bind($("#tabstrip-ExpenseLog"),ExpenseViewModel);
        
+          function getParametersE(e) {
+          
+               if(e.view.params.esId != undefined)
+               {
+                   // alert(e.view.params.TimeSheetId);
+                      ExpenseViewModel.load(e.view.params.esId);
+                  
+                }
+              
+        }
+    </script>
+    <script>
+    function initTimeSheet() {
+        var body = $(".km-pane");
+        debugger;
+        if (kendo.ui.DropDownList) {
+            $("#dropdown").kendoDropDownList({
+                //The options are needed only for the desktop demo, remove them for mobile.
+                  popup: { appendTo: body },
+                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
+            });
+        }
+
+        if (kendo.ui.Slider) {
+            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
+        }
+        
+      
+      
+       
+    }
+    function initExpense() {
+        var body = $(".km-pane");
+        debugger;
+        if (kendo.ui.DropDownList) {
+            $("#dropdown").kendoDropDownList({
+                //The options are needed only for the desktop demo, remove them for mobile.
+                  popup: { appendTo: body },
+                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
+            });
+        }
+
+        if (kendo.ui.Slider) {
+            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
+        }
+        
+         
     }
 </script>
 <script>
