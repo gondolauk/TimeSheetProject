@@ -212,8 +212,8 @@
             transport: {
                 read: {
                     // url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetJson",
-                    // url: "http://azuretocrm.cloudapp.net/Service1.svc/GetJson",
-                    url: "http://localhost:61397/Service1.svc/GetJson",
+                     url: "http://azuretocrm.cloudapp.net/Service1.svc/GetJson",
+                    // url: "http://localhost:61397/Service1.svc/GetJson",
                     dataType: 'json'
                 }
 
@@ -434,8 +434,8 @@
                wds = e.view.params.q;
                //   alert("2");
                //new kendo.mobile.Application();
-               // weeklyviewDS.transport.options.read.url = "http://azuretocrm.cloudapp.net/Service.svc/GetTimeSheet?q=" + wds;
-                   weeklyviewDS.transport.options.read.url= "http://localhost:61397/Service1.svc/GetTimeSheet?q=" + wds;               
+                weeklyviewDS.transport.options.read.url = "http://azuretocrm.cloudapp.net/Service1.svc/GetTimeSheet?q=" + wds;
+                //    weeklyviewDS.transport.options.read.url= "http://localhost:61397/Service1.svc/GetTimeSheet?q=" + wds;               
                //   alert("3");
                //Read data source to update
               weeklyviewDS.read();
@@ -504,8 +504,8 @@
                wds = e.view.params.q;        
               // weeklyexpenseviewDS.transport.options.read.url = "http://localhost:8005/Service.svc/Expense/GetExpense?q=" + wds;
               // weeklyexpenseviewDS.transport.options.read.url = "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetExpense?q=" + wds;
-               // weeklyexpenseviewDS.transport.options.read.url = "http://azuretocrm.cloudapp.net/Service.svc/GetExpense?q=" + wds;
-              weeklyexpenseviewDS.transport.options.read.url= "http://localhost:61397/Service1.svc/GetExpense?q=" + wds;   
+              weeklyexpenseviewDS.transport.options.read.url = "http://azuretocrm.cloudapp.net/Service1.svc/GetExpense?q=" + wds;
+              //weeklyexpenseviewDS.transport.options.read.url= "http://localhost:61397/Service1.svc/GetExpense?q=" + wds;   
                //Read data source to update
                weeklyexpenseviewDS.read();
                //        alert(e.view.params.q);
@@ -539,7 +539,7 @@
        
     <li>
                 <label>Customer
-                   <select data-bind="source: Custs"
+                    <select data-bind="source: Custs, value : data.CustomerId"
                            data-text-field="Name"
                            data-value-field="Id"
                            data-role="dropdownlist"></select>
@@ -547,7 +547,7 @@
             </li>
               <li>
                 <label>Project
-                   <select data-bind="source: Projs"
+                    <select data-bind="source: Projs, value : data.ProjectId"
                            data-text-field="Name"
                            data-value-field="Id"
                            data-role="dropdownlist"></select>  
@@ -555,7 +555,7 @@
             </li>           
              <li>
                 <label>Expense Type
-                     <select data-bind="source: Types"
+                     <select data-bind="source: Types, value : data.ExpenseType"
                            data-text-field="Name"
                            data-value-field="Id"
                            data-role="dropdownlist"></select>  
@@ -611,16 +611,16 @@
             <a data-role="button" data-bind="click: update">Done</a> 
           <!--    <a data-role="button" data-bind="click: destory">Delete</a> -->
               <li>          
-                <label>Customer
-                   <select data-bind="source: Custs"
+                <label>Customer</label>  
+                    <select data-bind="source: Custs, value: data.CustomerId"
                            data-text-field="Name"
                            data-value-field="Id"
                            data-role="dropdownlist"></select>
-                 </label>           
+                          
             </li>
               <li>
                 <label>Project
-                    <select data-bind="source: Projs"
+                    <select data-bind="source: Projs, value: data.ProjectId"
                            data-text-field="Name"
                            data-value-field="Id"
                            data-role="dropdownlist"></select>                
@@ -678,7 +678,8 @@
              Custs: new kendo.data.DataSource({
              transport: {
              read: {
-             url: "http://localhost:61397/Service1.svc/GetCustomers",
+             url: "http://azuretocrm.cloudapp.net/Service1.svc/GetCustomers",
+                 // url: "http://localhost:61397/Service1.svc/GetCustomers",
              dataType: "json"
              }
              },                 
@@ -703,7 +704,8 @@
              Projs: new kendo.data.DataSource({
              transport: {
              read: {
-             url: "http://localhost:61397/Service1.svc/Projects",
+                 url: "http://azuretocrm.cloudapp.net/Service1.svc/Projects",
+                 //url: "http://localhost:61397/Service1.svc/Projects",
              dataType: "json"
              }
              },
@@ -729,7 +731,8 @@
              load: function (tsid) {
                     $.ajax({
                         type: "GET",
-                        url: "http://localhost:61397/Service1.svc/TimeSheetEntry/" + tsid,                      
+                        url:"http://azuretocrm.cloudapp.net/Service1.svc/TimeSheetEntry/" + tsid,      
+                        // url: "http://localhost:61397/Service1.svc/TimeSheetEntry/" + tsid,                      
                         data: 1,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -796,7 +799,7 @@
              // {bar: "baz"}
               //  e.view.params[0].ToString()
               //  alert(e.view.params.TimeSheetId);
-                debugger;
+              //  debugger;
                
               // viewModel.loadProjects();              
               if(e.view.params.tsid != undefined)
@@ -821,6 +824,7 @@
                         ExpenseEntryDate: { type: "date" },
                         ExpenseDetails: { type: "string" },
                         ExpenseTypeName: { type: "string" },
+                        ExpenseType: { type: "string" },
                         GrossValue : { type: "number"},
                         VatValue : {type: "number"},
                         NetValue : { type: "number"},
@@ -834,7 +838,8 @@
              Custs: new kendo.data.DataSource({
              transport: {
              read: {
-             url: "http://localhost:61397/Service1.svc/GetCustomers",
+                 url:"http://azuretocrm.cloudapp.net/Service1.svc/GetCustomers",
+                 //url: "http://localhost:61397/Service1.svc/GetCustomers",
              dataType: "json"
              }
              },                 
@@ -859,7 +864,8 @@
              Projs: new kendo.data.DataSource({
              transport: {
              read: {
-             url: "http://localhost:61397/Service1.svc/Projects",
+                 url:   "http://azuretocrm.cloudapp.net/Service1.svc/Projects",
+                 // url: "http://localhost:61397/Service1.svc/Projects",
              dataType: "json"
              }
              },
@@ -885,7 +891,8 @@
              Types: new kendo.data.DataSource({
              transport: {
              read: {
-             url: "http://localhost:61397/Service1.svc/GetExpenseType",
+                  url: "http://azuretocrm.cloudapp.net/Service1.svc/GetExpenseType",
+                 //url: "http://localhost:61397/Service1.svc/GetExpenseType",
              dataType: "json"
              }
              },
@@ -911,8 +918,8 @@
              load: function (esid) {
                     $.ajax({
                         type: "GET",
-                        // url: "http://localhost:8005/Service.svc/Service.svc/GetExpense/" + esid ,                       
-                         url: "http://localhost:61397/Service1.svc/ExpenseEntry/" + esid,   
+                         url: "http://azuretocrm.cloudapp.net/Service1.svc//ExpenseEntry/" + esid,                        
+                        // url: "http://localhost:61397/Service1.svc/ExpenseEntry/" + esid,   
                         data: 1,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
