@@ -529,14 +529,15 @@
          
     </script>
    
-     <div id="tabstrip-ExpenseLog" data-role="view" data-title="Expense Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParametersE">
+     <div id="tabstrip-ExpenseLog" data-role="view" data-title="Expense Log" data-init="initExpense" data-use-native-scrolling="true" data-show="getParametersE">
                 <form action="./index.html">
               <ul>
                   
                
             <li><a data-role="backbutton">Back</a><a data-role="button" data-bind="click: update">DONE</a>    
             </li>
-           <li>
+       
+    <li>
                 <label>Customer
                    <select data-bind="source: Custs"
                            data-text-field="Name"
@@ -560,6 +561,7 @@
                            data-role="dropdownlist"></select>  
                 </label>
             </li>          
+        
             <li>
                 <label>Expense Detail
                     <input type="text"  id="ExpenseDetail" data-bind="value: data.ExpenseDetail"/>
@@ -596,7 +598,7 @@
          </form>       
     </div>      
      <!-- <div data-role="view" id="foo" data-show="fooShow">test</div>-->
-     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Sheet Log" data-init="initForm" data-use-native-scrolling="true" data-show="getParametersT">            
+     <div id="tabstrip-TimeSheetLog" data-role="view" data-title="Time Sheet Log" data-init="initTimeSheet" data-use-native-scrolling="true" data-show="getParametersT">            
          <form action="./index.html">
         <ul >
             
@@ -657,6 +659,57 @@
            //define a model
                     
           
+          
+           // kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
+
+          function getParametersT(e) {
+              //    alert("getParameters");
+             // {bar: "baz"}
+              //  e.view.params[0].ToString()
+              //  alert(e.view.params.TimeSheetId);
+                debugger;
+               
+              // viewModel.loadProjects();              
+              if(e.view.params.tsid != undefined)
+              {                                    
+                      TimeSheetViewModel.load(e.view.params.tsid);
+                  
+               }
+              //  alert("12");
+              
+        }
+   </script>    
+    
+     <script type="text/javascript">
+                
+      
+          function getParametersE(e) {
+          
+               if(e.view.params.esId != undefined)
+               {
+                   // alert(e.view.params.TimeSheetId);
+                      ExpenseViewModel.load(e.view.params.esId);
+                  
+                }
+              
+        }
+    </script>
+    <script>
+    function initTimeSheet() {
+        var body = $(".km-pane");
+        debugger;
+        if (kendo.ui.DropDownList) {
+            $("#dropdown").kendoDropDownList({
+                //The options are needed only for the desktop demo, remove them for mobile.
+                  popup: { appendTo: body },
+                 animation: { open: { effects: body.hasClass("km-android") ? "fadeIn" : body.hasClass("km-ios") || body.hasClass("km-wp") ? "slideIn:up" : "slideIn:down" } }
+            });
+        }
+
+        if (kendo.ui.Slider) {
+            // $("#slider").kendoSlider({ tooltip: { enabled: false } });
+        }
+        
            var Model = kendo.data.Model.define({
                id: "TimeSheetEntryId",
                fields: {
@@ -668,87 +721,74 @@
                    OtHours: { type: "number" },
                    Task: { type: "string" },
                    Note: { type: "string" },
-                   Rechargeable { type: "bool" }
+                   
                }
            });
+    
+        var TimeSheetViewModel = kendo.observable({    
+             data: new Model(),   
+             Custs: new kendo.data.DataSource({
+             transport: {
+             read: {
+             url: "http://localhost:61397/Service1.svc/GetCustomers",
+             dataType: "json"
+             }
+             },                 
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
 
+                        Id: { type: "string" },
+                        Name: { type: "string" },                      
 
-           var dataSource = new kendo.data.DataSource({
+                    }
+                },
 
-               type: 'json',
-               transport: {
-                   create: {
-                       type: "POST",
-                       url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
-                       contentType: "application/json; charset=utf-8",
-                       dataType: "json",
-                       processData: true,
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.GetCustomersResult;
+                },
+                type: "json"
+            },
+            }),          
+             Projs: new kendo.data.DataSource({
+             transport: {
+             read: {
+             url: "http://localhost:61397/Service1.svc/Projects",
+             dataType: "json"
+             }
+             },
+                 
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
 
-                       success: function (data, status, jqXHR) {
-                           alert("success..." + data);
-                       },
-                       error: function (xhr) {
-                           alert(xhr.responseText);
-                       }
-                   },
-                  
-                   parameterMap: function (data, type) {
-                       return kendo.stringify(data);
-                   }
+                        Id: { type: "string" },
+                        Name: { type: "string" },                      
 
-               },
-               schema: {
-                   model: Model
-               }
-           });  
-               
+                    }
+                },
 
-           var viewModel = kendo.observable({
-
-               data: new Model(),
-               create: function (e) {
-                                     
-                   var wsd = kendo.parseDate("2014/05/05", "yyyy/MM/dd", "en-GB").getTime();
-                   var tsd = kendo.parseDate("2014/05/07", "yyyy/MM/dd", "en-GB").getTime();
- 
-                     $.ajax({
-                        type: "POST",
-                         url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
-                         //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
-                        data: JSON.stringify(this.data),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            alert("new timesheet has been created with a new ID : " + data);
-                        },
-                        error: function (xhr) {
-                            alert(xhr.responseText);
-                        }
-                    });                   
-                   
-               },
-
-               //load: function (timesheetId) {
-                    load: function (tsid) {
+                parse: function (data) {
+                    //result comes from svc call. e.g
+                    return data.ProjectsResult;
+                },
+                type: "json"
+            },
+            }),          
+             load: function (tsid) {
                     $.ajax({
                         type: "GET",
-                        // url: "http://localhost:8005/Service.svc/GetJson/" + + $("#timesheetIdtext").val() ,
-                        
-                        //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetTimeSheet/" + tsid ,
-                        //url: "http://azuretocrm.cloudapp.net/Service1.svc/TimeSheetEntry/" + tsid
-                        url: "http://localhost:61397/Service1.svc/TimeSheetEntry/" + tsid
-                        
-                        //+ $("#tabstrip-TimeSheetLog").data("timesheetIdtext"),
+                        url: "http://localhost:61397/Service1.svc/TimeSheetEntry/" + tsid,                      
                         data: 1,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function (data) {
                             //  alert(data);
-                           viewModel.data = data.GetTimeSheetByIdResult;
-                            //viewModel.data.WeekStartDate = '\/Date(' + wsd + ')\/';
-                            //viewModel.data.TimeSheetDate = '\/Date('+ tsd +')\/';
-                            // viewModel.data.Status ="Submitted";
-                           kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
+                         viewModel.data = data.TimeSheetEntryResult;
+                         kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
                         },
                         error: function (xhr) {
                             alert(xhr.responseText);
@@ -757,8 +797,7 @@
 
                 
             },
-             
-              update: function () {
+             update: function () {
                   // alert(this.data.TimeSheetId + "- " + this.data.StHours );
                   $.ajax({
                         type: "POST",
@@ -779,7 +818,7 @@
                         }
                     });
                 },
-                destory : function () {
+             destory : function () {
                     $.ajax({
                         type: "DELETE",
                         //url: "http://localhost:8005/Service.svc/TimeSheet/"  + $("#timesheetIdtext").val() ,
@@ -797,145 +836,14 @@
                         }        
                     });
                 },
-
-
            });
-
-           kendo.bind($("#tabstrip-TimeSheetLog"), viewModel);
-
-          function getParametersT(e) {
-             // {bar: "baz"}
-              //  e.view.params[0].ToString()
-              //  alert(e.view.params.TimeSheetId);
-              //  debugger;
-               
-              // viewModel.loadProjects();              
-              //  if(e.view.params.tsid != undefined)
-              //  {
-                   // alert(e.view.params.TimeSheetId);                      
-              //    viewModel.load(e.view.params.tsid);
-                  
-              //  }
-              alert("12");
-              
-        }
-   </script>    
-    
-     <script type="text/javascript">
-         //expens log scripts
-         
-            //define a model
-
-           var ExpenseModel = kendo.data.Model.define({
-               id: "ExpenseId",
-               fields: {
-                        Project: { type: "string" },
-                        Status: { type: "string" },
-                        Owner: { type: "string" },
-                        WeekStartDate: { type: "date" },
-                        ExpenseDate: { type: "date" },
-                        ExpenseDetails: { type: "string" },
-                        ExpenseType: { type: "string" },
-                        GrossValue : { type: "number"},
-                        VatValue : {type: "number"},
-                        NetValue : { type: "number"},
-                        Customer: {type: "string"},
-               }
-           });
-
-
-           var ExpenseViewModel = kendo.observable({
-
-               data: new ExpenseModel(),
-               create: function (e) {
-                   /* debugger; 
-                   var wsd = kendo.parseDate("2014/05/05", "yyyy/MM/dd", "en-GB").getTime();
-                   var tsd = kendo.parseDate("2014/05/07", "yyyy/MM/dd", "en-GB").getTime();
-                  
-                     $.ajax({
-                        type: "POST",
-                         url: "http://localhost:8005/Service.svc/CreateTimeSheet/0",
-                         //url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/CreateTimeSheet/0",
-                        data: JSON.stringify(this.data),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            alert("new timesheet has been created with a new ID : " + data);
-                        },
-                        error: function (xhr) {
-                            alert(xhr.responseText);
-                        }
-                    });   */                
-                   
-               },
-
-               //load: function (timesheetId) {
-                    load: function (esid) {
-                    $.ajax({
-                        type: "GET",
-                        // url: "http://localhost:8005/Service.svc/Service.svc/GetExpense/" + esid ,                       
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/GetExpense/" + esid ,
-                        data: 1,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            //  alert(data);
-                           ExpenseViewModel.data = data.GetExpenseByIdResult;
-                           kendo.bind($("#tabstrip-ExpenseLog"), ExpenseViewModel);
-                        },
-                        error: function (xhr) {
-                            alert(xhr.responseText);
-                        }
-                    });
-
-                
-            },
-               
-              update: function () {
-                  // alert(this.data.TimeSheetId + "- " + this.data.StHours );
-                  $.ajax({
-                        type: "POST",
-                      //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
-                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateExpense/"  + this.data.ExpenseId ,
-                        data: JSON.stringify(this.data),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            // alert("Updated Successfully" + data);
-                            // viewModel.data = data.GetTimeSheetByIdResult;
-                            // kendo.bind($("#view"), viewModel);
-                        },
-                        error: function (xhr) {
-                            //  alert(xhr.responseText);
-                            //temp code
-                            alert("Updated Successfully!");
-                        }
-                    });
-                },
-                destory : function () {
-                },
-
-
-           });
-
-           kendo.bind($("#tabstrip-ExpenseLog"), ExpenseViewModel);
-
-          function getParametersE(e) {
-             // {bar: "baz"}
-              //  e.view.params[0].ToString()
-              //  alert(e.view.params.TimeSheetId);
-                debugger;
-                if(e.view.params.esId != undefined)
-               {
-                   // alert(e.view.params.TimeSheetId);
-                      ExpenseViewModel.load(e.view.params.esId);
-                  
-               }
-              
-        }
-    </script>
-    <script>
-    function initForm() {
+        
+        // kendo.bind(document.body, TimeSheetViewModel);
+          kendo.bind($("#tabstrip-TimeSheetLog"), TimeSheetViewModel);
+      
+       
+    }
+    function initExpense() {
         var body = $(".km-pane");
         debugger;
         if (kendo.ui.DropDownList) {
@@ -950,17 +858,33 @@
             // $("#slider").kendoSlider({ tooltip: { enabled: false } });
         }
         
-                
-       var c = kendo.observable({
-           //selectedProduct: {  },
+           var ExpenseModel = kendo.data.Model.define({
+               id: "ExpenseId",
+               fields: {
+                        ProjectId: { type: "string" },
+                        StatusName: { type: "string" },
+                        Owner: { type: "string" },
+                        WeekBegin: { type: "date" },
+                        ExpenseEntryDate: { type: "date" },
+                        ExpenseDetails: { type: "string" },
+                        ExpenseTypeName: { type: "string" },
+                        GrossValue : { type: "number"},
+                        VatValue : {type: "number"},
+                        NetValue : { type: "number"},
+                        CustomerId: {type: "string"},
+               }
+           });
+        
+
+        var ExpenseViewModel = kendo.observable({    
+             data: new ExpenseModel(),   
              Custs: new kendo.data.DataSource({
              transport: {
              read: {
              url: "http://localhost:61397/Service1.svc/GetCustomers",
              dataType: "json"
              }
-             },
-                 
+             },                 
             schema: {
                 model: {
                     id: "Id",
@@ -1030,14 +954,56 @@
                 },
                 type: "json"
             },
-            }),          
-      });
-        
-    
-        
-        kendo.bind(document.body, c);
-      
-        
+            }),   
+             load: function (esid) {
+                    $.ajax({
+                        type: "GET",
+                        // url: "http://localhost:8005/Service.svc/Service.svc/GetExpense/" + esid ,                       
+                         url: "http://localhost:61397/Service1.svc/ExpenseEntry/" + esid,   
+                        data: 1,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            //  alert(data);
+                           ExpenseViewModel.data = data.GetExpenseByIdResult;
+                           kendo.bind($("#tabstrip-ExpenseLog"), ExpenseViewModel);
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText);
+                        }
+                    });
+
+                
+            },             
+             update: function () {
+                  // alert(this.data.TimeSheetId + "- " + this.data.StHours );
+                  $.ajax({
+                        type: "POST",
+                      //url: "http://localhost:8005/Service.svc/UpdateTimeSheet/"  + $("#timesheetIdtext").val() ,
+                        url: "http://tdtandews.cloudapp.net/TANDEWS/Service.svc/UpdateExpense/"  + this.data.ExpenseId ,
+                        data: JSON.stringify(this.data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            // alert("Updated Successfully" + data);
+                            // viewModel.data = data.GetTimeSheetByIdResult;
+                            // kendo.bind($("#view"), viewModel);
+                        },
+                        error: function (xhr) {
+                            //  alert(xhr.responseText);
+                            //temp code
+                            alert("Updated Successfully!");
+                        }
+                    });
+                },
+             destory : function () {
+                },
+
+
+           });
+               
+          kendo.bind($("#tabstrip-ExpenseLog"),ExpenseViewModel);
+       
     }
 </script>
 <script>
